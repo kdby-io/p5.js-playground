@@ -1,0 +1,12 @@
+{
+
+  "name": "p5.js-playground",
+  "author": "Sangwon Kim <dev@pueue.com>",
+  "repository": "https://github.com/pueue/p5.js-playground",
+  "dependencies": {
+    "p5": "^0.7.3"
+  },
+  "devDependencies": {
+    "@types/p5": "^0.7.2"
+  }
+}
