@@ -1,0 +1,11 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+if [[ $1 ]]; then
+  cp -r template projects/$1
+else
+  echo -e "\n${RED}Missing a project name. Try like 'yarn new my_project'${NC}\n"
+  exit 1
+fi

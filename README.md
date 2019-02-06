@@ -26,3 +26,9 @@ yarn
 1. Click 'Go Live' from the status bar to start live server.
 ![](https://github.com/ritwickdey/vscode-live-server/raw/master/images/Screenshot/vscode-live-server-statusbar-3.jpg)
 2. Debug with 'Launch Chrome'
+
+## Create new project
+
+```
+yarn new my_project
+```
