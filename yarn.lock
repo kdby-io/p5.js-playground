@@ -2,12 +2,12 @@
 # yarn lockfile v1
 
 
-"@types/p5@^0.7.2":
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/@types/p5/-/p5-0.7.2.tgz#783601010d66a2039a7e40ec5388737611c0c85f"
-  integrity sha512-RZP5vE2HoPYP3TOCNpAK883z/0wNAgZ2svuk8o5eZ3aEREm2qaYYQW/w0373CjcmtEtYdGaeLqOgU7AaozGnNA==
+"@types/p5@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@types/p5/-/p5-0.9.1.tgz#920c6cd6ee30b5d9e5cc04cb9b11bb762c333bc5"
+  integrity sha512-4glOKdqdBiRWDFZwi/MjHudPV2U4t2L4fTTSacGapfFxyNXzZcAshAjqmrJkCIZcFlhRBEAL7AM95xRDMfrIwg==
 
-p5@^0.7.3:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/p5/-/p5-0.7.3.tgz#a0660327feb8da3e43359a16ad62566b96a7cabe"
-  integrity sha512-Ap0Op/YlbqlBe9BEkpislygOKcID9+i6lbGHcUY/QkgZl21+Jy0GPpw+bLjgURk/wlloLcXGnUDpuGsP0xsx2Q==
+p5@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/p5/-/p5-0.9.0.tgz#a4431bf2a0ff6ede06e2c512faddb495c3332504"
+  integrity sha512-N8FzKr9SKofl4f+d9g6oYDRk5JOYgY1bIhCInzNxW7khc1zk7whQIOhaHeijSslfN3rJYfWso6Fn3O/w+TCwLg==
