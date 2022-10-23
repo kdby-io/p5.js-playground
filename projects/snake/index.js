@@ -1,8 +1,4 @@
-const SIZE = 20
-let GRID_SPACE
-
-let snake
-let apple
+let game
 
 function setup() {
   createCanvas(
@@ -12,50 +8,66 @@ function setup() {
   rectMode(CENTER)
   frameRate(5)
 
-  GRID_SPACE = width / SIZE
-
-  snake = new Snake()
-  apple = new Apple()
+  game = new Game(20)
 }
 
 function draw() {
   background(40, 60, 80)
 
-  showEdge()
-  snake.move()
-
-  if (apple.pos.x == snake.body[0].x && apple.pos.y == snake.body[0].y) {
-    snake.eat()
-    apple = new Apple()
-  }
-
-  apple.show()
-  snake.show()
-
+  game.play()
+  game.show()
 }
 
 function keyPressed() {
-  snake.direction = keyCode
+  game.snake.direction = keyCode
 }
 
-const showEdge = () => {
-  push()
+class Game {
+  constructor(size) {
+    this.SIZE = size
+    this.GRID_SPACE = width / (size + 2)
 
-  noFill()
-  stroke(10, 20, 30)
-  strokeWeight(GRID_SPACE)
+    this.score = 0
+    this.snakeMap = new Array(size).fill(new Array(size).fill(false))
 
-  rect(width / 2, height / 2, width - GRID_SPACE, height - GRID_SPACE)
+    this.snake = new Snake(this)
+    this.apple = new Apple(this)
+  }
+  
+  play() {
+    this.snake.move()
+    if (this.apple.pos.x == this.snake.body[0].x && this.apple.pos.y == this.snake.body[0].y) {
+      this.snake.eat()
+      this.apple = new Apple(this)
+    }
+  }
 
-  pop()
+  show() {
+    this.showEdge()
+    this.apple.show()
+    this.snake.show()
+  }
+
+  showEdge() {
+    push()
+
+    noFill()
+    stroke(10, 20, 30)
+    strokeWeight(this.GRID_SPACE)
+
+    rect(width / 2, height / 2, width - this.GRID_SPACE, height - this.GRID_SPACE)
+
+    pop()
+  }
 }
 
 class Snake {
-  constructor() {
-    const x = floor(random(1, SIZE-1))
-    const y = floor(random(1, SIZE-1))
-    this.score = 1
+  constructor(game) {
+    this.game = game
+    const x = floor(random(game.SIZE))
+    const y = floor(random(game.SIZE))
     this.body = [createVector(x, y)]
+    game.snakeMap[x][y] = true
     this.direction = null
   }
 
@@ -66,10 +78,10 @@ class Snake {
     fill(255)
     this.body.forEach(body => {
       rect(
-        body.x * GRID_SPACE + (GRID_SPACE / 2),
-        body.y * GRID_SPACE + (GRID_SPACE / 2),
-        GRID_SPACE,
-        GRID_SPACE,
+        posToDisplay(body.x, this.game.GRID_SPACE),
+        posToDisplay(body.y, this.game.GRID_SPACE),
+        this.game.GRID_SPACE,
+        this.game.GRID_SPACE,
       )
     })
 
@@ -77,7 +89,7 @@ class Snake {
   }
 
   move() {
-    const head = snake.body[0]
+    const head = this.body[0]
 
     switch (this.direction) {
       case LEFT_ARROW:
@@ -94,20 +106,29 @@ class Snake {
         break;
     }
 
-    snake.body = snake.body.slice(0, this.score)
+    this.body = this.body.slice(0, this.game.score + 1)
+
+    this.game.snakeMap = new Array(this.game.SIZE).fill(new Array(this.game.SIZE).fill(false))
+    this.body.forEach(body => {
+      this.game.snakeMap[body.x][body.y] = true
+    })
   }
 
   eat() {
-    this.score += 1
+    this.game.score += 1
     this.body.push(createVector(this.body[0].x, this.body[0].y))
   }
 }
 
 class Apple {
-  constructor() {
-    const x = floor(random(1, SIZE-1))
-    const y = floor(random(1, SIZE-1))
-    this.pos = createVector(x, y)
+  constructor(game) {
+    this.game = game
+    let x, y
+    do {
+      x = floor(random(game.SIZE))
+      y = floor(random(game.SIZE))
+      this.pos = createVector(x, y)
+    } while (game.snakeMap[x][y] === true);
   }
 
   show() {
@@ -116,12 +137,14 @@ class Apple {
     noStroke()
     fill(255,0,0)
     rect(
-      this.pos.x * GRID_SPACE + (GRID_SPACE / 2),
-      this.pos.y * GRID_SPACE + (GRID_SPACE / 2),
-      GRID_SPACE,
-      GRID_SPACE,
+      posToDisplay(this.pos.x, this.game.GRID_SPACE),
+      posToDisplay(this.pos.y, this.game.GRID_SPACE),
+      this.game.GRID_SPACE,
+      this.game.GRID_SPACE,
     )
 
     pop()
   }
 }
+
+const posToDisplay = (pos, gridSpace) => (pos+1) * gridSpace + (gridSpace / 2)
