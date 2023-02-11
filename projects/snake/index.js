@@ -1,14 +1,18 @@
 let game
+let runScript
+
+const GAME_SIZE = 20
 
 function setup() {
-  createCanvas(
-    min(windowWidth, windowHeight),
-    min(windowWidth, windowHeight)
-  )
+  createCanvas(400, 400)
   rectMode(CENTER)
   frameRate(5)
 
-  game = new Game(20)
+  game = new Game(GAME_SIZE)
+  runScript = eval(document.getElementById('code').value)
+
+  const scoreDisplay = document.getElementById("score")
+  scoreDisplay.innerHTML = game.getScore()
 }
 
 function draw() {
@@ -18,25 +22,35 @@ function draw() {
   game.show()
 }
 
-function keyPressed() {
-  game.snake.direction = keyCode
-}
+// function keyPressed() {
+//   game.snake.direction = keyCode
+// }
 
 class Game {
+  #score
+
   constructor(size) {
     this.SIZE = size
     this.GRID_SPACE = width / (size + 2)
 
-    this.score = 0
+    this.gameover = false
+    this.#score = 0
     this.snakeMap = new Array(size).fill(new Array(size).fill(false))
 
     this.snake = new Snake(this)
     this.apple = new Apple(this)
   }
+
+  getScore() {
+    return this.#score
+  }
   
   play() {
-    this.snake.move()
+    if (this.gameover) return
+
+    this.snake.move(this.apple)
     if (this.apple.pos.x == this.snake.body[0].x && this.apple.pos.y == this.snake.body[0].y) {
+      this.#score += 1
       this.snake.eat()
       this.apple = new Apple(this)
     }
@@ -85,28 +99,65 @@ class Snake {
       )
     })
 
+    if (this.game.gameover) {
+        push()
+        fill(255, 0, 255)
+
+        const head = this.body[0]
+        rect(
+          posToDisplay(head.x, this.game.GRID_SPACE),
+          posToDisplay(head.y, this.game.GRID_SPACE),
+          this.game.GRID_SPACE,
+          this.game.GRID_SPACE,
+        )
+
+        pop()
+    }
+
     pop()
   }
 
-  move() {
+  move(apple) {
+    const publicBody = this.body.map(v => ({x: v.x, y: v.y}))
+    const publicApple = {x: apple.pos.x, y: apple.pos.y }
+    this.direction = runScript(publicBody, publicApple)
+
     const head = this.body[0]
+    let nextHead
 
     switch (this.direction) {
       case LEFT_ARROW:
-        this.body.unshift(createVector(head.x-1, head.y))
+        nextHead = createVector(head.x-1, head.y)
         break;
       case RIGHT_ARROW:
-        this.body.unshift(createVector(head.x+1, head.y))
+        nextHead = createVector(head.x+1, head.y)
         break;
       case UP_ARROW:
-        this.body.unshift(createVector(head.x, head.y-1))
+        nextHead = createVector(head.x, head.y-1)
         break;
       case DOWN_ARROW:
-        this.body.unshift(createVector(head.x, head.y+1))
+        nextHead = createVector(head.x, head.y+1)
         break;
+      default:
+        nextHead = head
     }
 
-    this.body = this.body.slice(0, this.game.score + 1)
+    this.body.unshift(nextHead)
+    this.body = this.body.slice(0, this.game.getScore() + 1)
+    // console.log(nextHead.x, nextHead.y)
+
+    if (nextHead.x < 0 || GAME_SIZE <= nextHead.x || nextHead.y < 0 || GAME_SIZE <= nextHead.y) {
+      this.game.gameover = true
+      return
+    }
+
+    // check body collpa
+    this.body.slice(1).forEach(v => {
+      if (nextHead.x === v.x && nextHead.y === v.y) {
+        this.game.gameover = true
+        return
+      }
+    })
 
     this.game.snakeMap = new Array(this.game.SIZE).fill(new Array(this.game.SIZE).fill(false))
     this.body.forEach(body => {
@@ -115,8 +166,10 @@ class Snake {
   }
 
   eat() {
-    this.game.score += 1
     this.body.push(createVector(this.body[0].x, this.body[0].y))
+
+    const scoreDisplay = document.getElementById("score")
+    scoreDisplay.innerHTML = this.game.getScore()
   }
 }
 
